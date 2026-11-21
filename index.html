@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eight0-knee’s PM Brief — AI Research Simplified for Product Managers</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased selection:bg-indigo-100 selection:text-indigo-900">
+
+  <!-- Minimal Header -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-slate-200">
+    <div class="max-w-4xl mx-auto px-5 h-16 flex items-center justify-between">
+      <a href="#" class="font-bold text-lg tracking-tight flex items-center gap-2">
+        <span class="inline-block w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
+        <span>Eight0-knee’s <span class="text-indigo-600">PM Brief</span></span>
+      </a>
+      <nav class="flex items-center gap-6 text-sm font-medium text-slate-600">
+        <a href="#archive" class="hover:text-slate-900 transition">Archive</a>
+        <a href="#sponsor" class="hover:text-slate-900 transition">Sponsor Us</a>
+        <a href="#subscribe" class="hidden sm:inline-block bg-slate-900 text-white px-3.5 py-1.5 rounded-lg hover:bg-slate-800 transition">
+          Subscribe
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-5">
+
+    <!-- 1. HERO + LEAD MAGNET CAPTURE -->
+    <section id="subscribe" class="py-16 md:py-24 text-center">
+      <span class="inline-block px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold tracking-wide uppercase mb-5 border border-indigo-100">
+        Weekly Brief • From arXiv to PRD in 5 Minutes
+      </span>
+
+      <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight max-w-3xl mx-auto">
+        Ship smarter AI products without reading 40-page research papers.
+      </h1>
+
+      <p class="mt-5 text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+        Every Tuesday, <strong class="text-slate-800">Eight0-knee</strong> translates the top 3 AI research papers into practical product specs, UX patterns, and latency/cost realities.
+      </p>
+
+      <!-- Lead Magnet Offer Box -->
+      <div class="mt-8 max-w-xl mx-auto bg-white p-6 rounded-2xl shadow-sm border border-slate-200 text-left">
+        <p class="text-sm font-medium text-slate-800 mb-3">
+          🎁 <span class="text-indigo-600 font-semibold">Free Bonus:</span> Subscribe now to unlock our Notion playbook: <em>"5 Landmark AI Papers Every PM Must Know (With PRD Templates)"</em>.
+        </p>
+
+        <form id="hero-subscribe-form" class="flex flex-col sm:flex-row gap-2.5">
+          <input
+            type="email"
+            id="hero-email"
+            required
+            placeholder="you@company.com"
+            class="flex-1 px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent text-sm"
+          />
+          <button
+            type="submit"
+            id="hero-submit-btn"
+            class="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm transition cursor-pointer whitespace-nowrap"
+          >
+            Get Free Vault & Brief
+          </button>
+        </form>
+
+        <!-- Dynamic Feedback Message -->
+        <p id="hero-feedback" class="mt-3 text-sm hidden"></p>
+
+        <p class="mt-3 text-xs text-slate-400">
+          Zero hype. Unsubscribe in 1 click. Built for PMs, Founders & AI Builders.
+        </p>
+      </div>
+    </section>
+
+    <!-- 2. INTERACTIVE SAMPLE ("TRY BEFORE YOU SUBSCRIBE") -->
+    <section class="py-10 border-t border-slate-200">
+      <div class="mb-6">
+        <span class="text-xs font-semibold uppercase tracking-wider text-indigo-600">Sample Breakdown • Issue #01</span>
+        <h2 class="text-2xl font-bold mt-1">How a Paper Becomes a Product Decision</h2>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-slate-100 bg-slate-50/50">
+          <span class="text-xs font-medium px-2.5 py-1 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+            Category: Agents & UX
+          </span>
+          <h3 class="text-xl font-bold mt-3 text-slate-900">
+            Paper: Reducing Multi-Step Agent Failure Rates via Step-Level Verification
+          </h3>
+          <p class="text-sm text-slate-500 mt-1">Originally 28 pages on arXiv • Translated in 3 minutes</p>
+        </div>
+
+        <!-- Interactive Tabs -->
+        <div class="flex border-b border-slate-200 text-sm font-medium">
+          <button onclick="switchTab('breakthrough')" id="tab-breakthrough" class="tab-btn flex-1 py-3 px-4 border-b-2 border-indigo-600 text-indigo-600 bg-indigo-50/30">
+            1. The Breakthrough
+          </button>
+          <button onclick="switchTab('pm')" id="tab-pm" class="tab-btn flex-1 py-3 px-4 border-b-2 border-transparent text-slate-500 hover:text-slate-800">
+            2. The PM Unlock
+          </button>
+          <button onclick="switchTab('tradeoffs')" id="tab-tradeoffs" class="tab-btn flex-1 py-3 px-4 border-b-2 border-transparent text-slate-500 hover:text-slate-800">
+            3. Cost & Latency
+          </button>
+        </div>
+
+        <!-- Tab Panels -->
+        <div class="p-6 text-slate-700 leading-relaxed text-sm md:text-base">
+          <div id="panel-breakthrough" class="tab-panel">
+            <p>
+              <strong>In plain English:</strong> Instead of letting an AI agent finish a 6-step workflow before checking if the final answer is right, researchers verified <em>each intermediate step</em> using a smaller, cheaper model. Accuracy jumped by 24% on complex enterprise tasks.
+            </p>
+          </div>
+          <div id="panel-pm" class="tab-panel hidden">
+            <p>
+              <strong>What this changes on your roadmap:</strong> Stop hiding agent failures behind a generic "Thinking..." spinner. Build <strong>checkpoint UX</strong>—let users see and approve step 2 before the agent executes step 3, turning black-box errors into trust-building micro-interactions.
+            </p>
+          </div>
+          <div id="panel-tradeoffs" class="tab-panel hidden">
+            <p>
+              <strong>What engineering will tell you:</strong> Step-level verification adds ~400–800ms per step and ~18% more token spend. Worth it for high-stakes B2B workflows (finance, CRM updates); skip it for casual consumer chat where speed beats perfection.
+            </p>
+          </div>
+        </div>
+
+        <!-- NATIVE MID-TEXT SPONSORSHIP SLOT -->
+        <div class="mx-6 mb-6 p-4 rounded-xl bg-amber-50/60 border border-amber-200/80">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-amber-800">Presented By • Native Sponsor Slot</span>
+            <a href="#sponsor" class="text-[11px] text-amber-700 underline">Book this slot</a>
+          </div>
+          <p class="text-sm text-slate-700">
+            <strong>Ship reliable AI agents without guessing:</strong> Reading papers is step one—catching silent regressions in production is step two. <a href="#sponsor" class="text-indigo-600 font-semibold underline">YourBrand Evals</a> gives PMs one-click trace reviews before features hit users.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. CURATED ARCHIVE HUB -->
+    <section id="archive" class="py-12 border-t border-slate-200">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+        <div>
+          <h2 class="text-2xl font-bold">Research-to-Product Archive</h2>
+          <p class="text-sm text-slate-600 mt-1">Browse past breakdowns by the product bottleneck you’re solving.</p>
+        </div>
+        <div class="flex flex-wrap gap-2 text-xs font-medium" id="archive-filters">
+          <button onclick="filterArchive('all', this)" class="filter-btn px-3 py-1.5 rounded-full bg-slate-900 text-white">All</button>
+          <button onclick="filterArchive('Agents & UX', this)" class="filter-btn px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-600 hover:border-slate-400">Agents & UX</button>
+          <button onclick="filterArchive('Latency & Cost', this)" class="filter-btn px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-600 hover:border-slate-400">Latency & Cost</button>
+          <button onclick="filterArchive('Evals & Trust', this)" class="filter-btn px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-600 hover:border-slate-400">Evals & Trust</button>
+        </div>
+      </div>
+
+      <div id="archive-grid" class="grid md:grid-cols-2 gap-4">
+        <article data-category="Latency & Cost" class="archive-card bg-white p-5 rounded-xl border border-slate-200 hover:border-indigo-300 transition">
+          <span class="text-xs font-semibold text-indigo-600">Latency & Cost • Issue #04</span>
+          <h3 class="font-bold text-slate-900 mt-1.5">RAG vs. 1M-Token Context: A PM’s Margin Calculator</h3>
+          <p class="text-sm text-slate-600 mt-2">When stuffing the prompt beats vector search—and the exact user-volume threshold where costs flip.</p>
+          <a href="#subscribe" class="inline-block mt-4 text-xs font-semibold text-indigo-600 hover:underline">Unlock full PRD checklist →</a>
+        </article>
+
+        <article data-category="Evals & Trust" class="archive-card bg-white p-5 rounded-xl border border-slate-200 hover:border-indigo-300 transition">
+          <span class="text-xs font-semibold text-indigo-600">Evals & Trust • Issue #03</span>
+          <h3 class="font-bold text-slate-900 mt-1.5">Why Users Distrust "Confidence Scores" in AI UIs</h3>
+          <p class="text-sm text-slate-600 mt-2">New HCI research on calibrated citations vs. raw percentage badges in enterprise search products.</p>
+          <a href="#subscribe" class="inline-block mt-4 text-xs font-semibold text-indigo-600 hover:underline">Unlock full PRD checklist →</a>
+        </article>
+
+        <article data-category="Agents & UX" class="archive-card bg-white p-5 rounded-xl border border-slate-200 hover:border-indigo-300 transition">
+          <span class="text-xs font-semibold text-indigo-600">Agents & UX • Issue #02</span>
+          <h3 class="font-bold text-slate-900 mt-1.5">Designing "Undo" Patterns for Autonomous Workflows</h3>
+          <p class="text-sm text-slate-600 mt-2">How reversible action queues boost user adoption of background AI features by 3x.</p>
+          <a href="#subscribe" class="inline-block mt-4 text-xs font-semibold text-indigo-600 hover:underline">Unlock full PRD checklist →</a>
+        </article>
+
+        <article data-category="Latency & Cost" class="archive-card bg-white p-5 rounded-xl border border-slate-200 hover:border-indigo-300 transition">
+          <span class="text-xs font-semibold text-indigo-600">Latency & Cost • Issue #01</span>
+          <h3 class="font-bold text-slate-900 mt-1.5">Speculative Decoding: Free Speed Without Model Downgrades</h3>
+          <p class="text-sm text-slate-600 mt-2">How to cut perceived time-to-first-token in half while keeping flagship reasoning quality.</p>
+          <a href="#subscribe" class="inline-block mt-4 text-xs font-semibold text-indigo-600 hover:underline">Unlock full PRD checklist →</a>
+        </article>
+      </div>
+    </section>
+
+    <!-- 4. CLASSIFIED TEXT ADS + SPONSORSHIP HUB -->
+    <section id="sponsor" class="py-12 border-t border-slate-200 grid md:grid-cols-2 gap-8">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200">
+        <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4">PM Toolkit • Classifieds</h3>
+        <ul class="space-y-4 text-sm">
+          <li class="pb-3 border-b border-slate-100">
+            <a href="#" class="font-semibold text-indigo-600 hover:underline">Hiring: Senior AI Product Manager (Remote)</a>
+            <p class="text-slate-600 mt-0.5">Lead agentic workflows at a Series B dev-tools startup. $195k–$230k + equity.</p>
+          </li>
+          <li class="pb-3 border-b border-slate-100">
+            <a href="#" class="font-semibold text-indigo-600 hover:underline">PromptDiff — Visual A/B Testing for PMs</a>
+            <p class="text-slate-600 mt-0.5">Compare model outputs side-by-side before shipping prompt changes to production.</p>
+          </li>
+          <li>
+            <a href="mailto:hello@yourdomain.com?subject=Classified%20Ad%20Booking" class="text-xs font-semibold text-slate-500 hover:text-slate-900">
+              + Book a 2-line classified slot here →
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="bg-slate-900 text-white p-6 rounded-2xl flex flex-col justify-between">
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-indigo-400">Partner With Eight0-knee</span>
+          <h3 class="text-xl font-bold mt-2">Reach AI Product Decision-Makers</h3>
+          <p class="text-sm text-slate-300 mt-3 leading-relaxed">
+            Our readers influence tooling budgets for AI evals, observability, cloud infrastructure, and product analytics. Partner via:
+          </p>
+          <ul class="mt-3 space-y-1.5 text-sm text-slate-300">
+            <li>• <strong>Native Mid-Text Sponsorships</strong> (Newsletter + Archive)</li>
+            <li>• <strong>Classified Text Ads</strong> (Tools & AI PM Roles)</li>
+            <li>• <strong>Co-Branded Research Playbooks</strong> & Cross-Promos</li>
+          </ul>
+        </div>
+        <a href="mailto:hello@yourdomain.com?subject=Sponsorship%20Inquiry" class="mt-6 inline-block text-center bg-white text-slate-900 font-semibold text-sm py-2.5 px-4 rounded-xl hover:bg-slate-100 transition">
+          Request Media Kit & Dates →
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-slate-200 py-8 text-center text-xs text-slate-500">
+    © <span id="year"></span> Eight0-knee’s PM Brief. Built for builders bridging research and product.
+  </footer>
+
+  <!-- JAVASCRIPT: Supabase Capture + Interactive UI -->
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const SUPABASE_URL = 'https://viugicqhozisszozrxlw.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_x2PdE_faR83Y6nzK4DNw5A_eyJ7vh9K';
+
+    // Put your Notion Lead Magnet URL here later (in Step 5)
+    const LEAD_MAGNET_URL = '#archive';
+
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const form = document.getElementById('hero-subscribe-form');
+    const emailInput = document.getElementById('hero-email');
+    const submitBtn = document.getElementById('hero-submit-btn');
+    const feedback = document.getElementById('hero-feedback');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = emailInput.value.trim().toLowerCase();
+      if (!email) return;
+
+      if (SUPABASE_URL.includes('YOUR_PROJECT_ID') || SUPABASE_ANON_KEY.includes('YOUR_SUPABASE')) {
+        feedback.classList.remove('hidden');
+        feedback.className = 'mt-3 text-sm text-amber-700 bg-amber-50 p-3 rounded-lg border border-amber-200';
+        feedback.textContent = '⚠️ Paste your Supabase URL and Anon Key into index.html first!';
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Saving...';
+      feedback.classList.add('hidden');
+
+      const { error } = await supabaseClient
+        .from('subscribers')
+        .insert([{ email: email, source: 'hero_lead_magnet' }]);
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Get Free Vault & Brief';
+      feedback.classList.remove('hidden');
+
+      if (!error) {
+        feedback.className = 'mt-3 text-sm text-emerald-700 bg-emerald-50 p-3 rounded-lg border border-emerald-200';
+        feedback.innerHTML = `✅ You're in! <a href="${LEAD_MAGNET_URL}" class="underline font-semibold">Access your 5 AI Papers Playbook here →</a>`;
+        emailInput.value = '';
+      } else if (error.code === '23505') {
+        feedback.className = 'mt-3 text-sm text-indigo-700 bg-indigo-50 p-3 rounded-lg border border-indigo-200';
+        feedback.innerHTML = `👋 You're already subscribed! <a href="${LEAD_MAGNET_URL}" class="underline font-semibold">Access your Playbook here →</a>`;
+      } else {
+        feedback.className = 'mt-3 text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-200';
+        feedback.textContent = 'Error saving email. Check your browser console (F12) for details.';
+        console.error(error);
+      }
+    });
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('border-indigo-600', 'text-indigo-600', 'bg-indigo-50/30');
+        b.classList.add('border-transparent', 'text-slate-500');
+      });
+
+      document.getElementById(`panel-${tabName}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`tab-${tabName}`);
+      activeBtn.classList.add('border-indigo-600', 'text-indigo-600', 'bg-indigo-50/30');
+      activeBtn.classList.remove('border-transparent', 'text-slate-500');
+    }
+
+    function filterArchive(category, clickedBtn) {
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('bg-slate-900', 'text-white');
+        btn.classList.add('bg-white', 'border', 'border-slate-200', 'text-slate-600');
+      });
+      clickedBtn.classList.add('bg-slate-900', 'text-white');
+      clickedBtn.classList.remove('bg-white', 'border', 'border-slate-200', 'text-slate-600');
+
+      document.querySelectorAll('.archive-card').forEach(card => {
+        if (category === 'all' || card.dataset.category === category) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

@@ -153,34 +153,9 @@
       </div>
 
       <div id="archive-grid" class="grid md:grid-cols-2 gap-4">
-        <article data-category="Latency & Cost" class="archive-card bg-white p-5 rounded-xl border border-slate-200 hover:border-indigo-300 transition">
-          <span class="text-xs font-semibold text-indigo-600">Latency & Cost • Issue #04</span>
-          <h3 class="font-bold text-slate-900 mt-1.5">RAG vs. 1M-Token Context: A PM’s Margin Calculator</h3>
-          <p class="text-sm text-slate-600 mt-2">When stuffing the prompt beats vector search—and the exact user-volume threshold where costs flip.</p>
-          <a href="#subscribe" class="inline-block mt-4 text-xs font-semibold text-indigo-600 hover:underline">Unlock full PRD checklist →</a>
-        </article>
-
-        <article data-category="Evals & Trust" class="archive-card bg-white p-5 rounded-xl border border-slate-200 hover:border-indigo-300 transition">
-          <span class="text-xs font-semibold text-indigo-600">Evals & Trust • Issue #03</span>
-          <h3 class="font-bold text-slate-900 mt-1.5">Why Users Distrust "Confidence Scores" in AI UIs</h3>
-          <p class="text-sm text-slate-600 mt-2">New HCI research on calibrated citations vs. raw percentage badges in enterprise search products.</p>
-          <a href="#subscribe" class="inline-block mt-4 text-xs font-semibold text-indigo-600 hover:underline">Unlock full PRD checklist →</a>
-        </article>
-
-        <article data-category="Agents & UX" class="archive-card bg-white p-5 rounded-xl border border-slate-200 hover:border-indigo-300 transition">
-          <span class="text-xs font-semibold text-indigo-600">Agents & UX • Issue #02</span>
-          <h3 class="font-bold text-slate-900 mt-1.5">Designing "Undo" Patterns for Autonomous Workflows</h3>
-          <p class="text-sm text-slate-600 mt-2">How reversible action queues boost user adoption of background AI features by 3x.</p>
-          <a href="#subscribe" class="inline-block mt-4 text-xs font-semibold text-indigo-600 hover:underline">Unlock full PRD checklist →</a>
-        </article>
-
-        <article data-category="Latency & Cost" class="archive-card bg-white p-5 rounded-xl border border-slate-200 hover:border-indigo-300 transition">
-          <span class="text-xs font-semibold text-indigo-600">Latency & Cost • Issue #01</span>
-          <h3 class="font-bold text-slate-900 mt-1.5">Speculative Decoding: Free Speed Without Model Downgrades</h3>
-          <p class="text-sm text-slate-600 mt-2">How to cut perceived time-to-first-token in half while keeping flagship reasoning quality.</p>
-          <a href="#subscribe" class="inline-block mt-4 text-xs font-semibold text-indigo-600 hover:underline">Unlock full PRD checklist →</a>
-        </article>
+        <p class="text-sm text-slate-500 col-span-2">Loading research archive...</p>
       </div>
+  
     </section>
 
     <!-- 4. CLASSIFIED TEXT ADS + SPONSORSHIP HUB -->
@@ -297,6 +272,61 @@
       activeBtn.classList.remove('border-transparent', 'text-slate-500');
     }
 
+    let allIssues = [];
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text ?? '';
+      return div.innerHTML;
+    }
+
+    async function loadArchive() {
+      const grid = document.getElementById('archive-grid');
+      const { data, error } = await supabaseClient
+        .from('issues')
+        .select('issue_number, title, pm_category, summary, paper_url')
+        .eq('is_published', true)
+        .order('issue_number', { ascending: false })
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        grid.innerHTML = '<p class="text-sm text-red-600 col-span-2">Could not load archive right now.</p>';
+        console.error(error);
+        return;
+      }
+
+      allIssues = data || [];
+      renderArchive('all');
+    }
+
+    function renderArchive(category) {
+      const grid = document.getElementById('archive-grid');
+      const filtered = category === 'all'
+        ? allIssues
+        : allIssues.filter(item => item.pm_category === category);
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '<p class="text-sm text-slate-500 col-span-2">No breakdowns in this category yet.</p>';
+        return;
+      }
+
+      grid.innerHTML = filtered.map(item => `
+        <article class="archive-card bg-white p-5 rounded-xl border border-slate-200 hover:border-indigo-300 transition flex flex-col justify-between">
+          <div>
+            <span class="text-xs font-semibold text-indigo-600">
+              ${escapeHtml(item.pm_category)} • Issue #${String(item.issue_number).padStart(2, '0')}
+            </span>
+            <h3 class="font-bold text-slate-900 mt-1.5">${escapeHtml(item.title)}</h3>
+            <p class="text-sm text-slate-600 mt-2">${escapeHtml(item.summary)}</p>
+          </div>
+          <div class="mt-4 flex items-center gap-4 text-xs font-semibold">
+            <a href="#subscribe" class="text-indigo-600 hover:underline">Unlock full PRD checklist →</a>
+            ${item.paper_url ? `<a href="${escapeHtml(item.paper_url)}" target="_blank" rel="noopener" class="text-slate-400 hover:text-slate-700">Source Paper ↗</a>` : ''}
+          </div>
+        </article>
+      `).join('');
+    }
+
     function filterArchive(category, clickedBtn) {
       document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.classList.remove('bg-slate-900', 'text-white');
@@ -304,15 +334,7 @@
       });
       clickedBtn.classList.add('bg-slate-900', 'text-white');
       clickedBtn.classList.remove('bg-white', 'border', 'border-slate-200', 'text-slate-600');
-
-      document.querySelectorAll('.archive-card').forEach(card => {
-        if (category === 'all' || card.dataset.category === category) {
-          card.classList.remove('hidden');
-        } else {
-          card.classList.add('hidden');
-        }
-      });
+      renderArchive(category);
     }
-  </script>
-</body>
-</html>
+
+    loadArchive();
